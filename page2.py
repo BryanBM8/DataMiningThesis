@@ -63,6 +63,7 @@ def show():
     st.subheader("Top 20 Tweet Paling Viral")
     st.dataframe(top_20_viral_display, use_container_width=True)
 
+    st.header('Top 10 Tweet Tiap Univ')
     selected_user = st.selectbox("Pilih Universitas (username):", usernames)
     top10 = (
         df[df['username'] == selected_user]
@@ -72,6 +73,6 @@ def show():
         .reset_index(drop=True)
     )
 
-    st.subheader(f"Top 10 Tweet @{selected_user}")
+    st.subheader(f" @{selected_user}")
     st.dataframe(top10, use_container_width=True)
 

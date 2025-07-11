@@ -11,7 +11,7 @@ st.title('COMPARISON OF LANGUAGE MANNERS AND OPINION HABITS IN TOP INDONESIAN UN
 #     st.session_state.signifikan2=None
 #     st.session_state.id=None
 
-tabs1, tabs2, tabs3= st.tabs( ["Informasi Umum", "Topic Modeling", "Sentiment Analysis"])
+tabs1, tabs2, tabs3, tabs4= st.tabs( ["Informasi Umum", "Virality", "Topic Modeling", "Sentiment Analysis"])
 
 with tabs1:
     import page1
@@ -22,6 +22,8 @@ with tabs2:
     import page2
     page2.show()
 with tabs3:
+    st.write('To be develop')
+with tabs4:
     st.write('To be develop')
     # import page1
     # page1.show()
