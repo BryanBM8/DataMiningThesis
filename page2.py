@@ -3,8 +3,8 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-
 def show():
+    # st.set_page_config(layout="centered")
     file_path_new='all_tweet_virality.csv'
 
     df = pd.read_csv(file_path_new,

@@ -21,7 +21,7 @@ def show():
     percent = counts / total * 100
 
 
-    st.subheader("Statistik per Universitas")
+
     per_row = 3
     univ_list = counts.index.tolist()
 
@@ -29,13 +29,12 @@ def show():
         cols = st.columns(per_row)
         for j, univ in enumerate(univ_list[i:i + per_row]):
             with cols[j]:
-                st.metric(
-                    label=univ,
-                    value=f"{counts[univ]} tweet",
-                    delta=f"{percent[univ]:.1f}%",
-                    delta_color="normal"
-                )
+                st.markdown(f"<div style='font-size: 32px; font-weight: bold;'>{univ}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='font-size: 16 px; '>{counts[univ]} tweet</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='color: gray; font-size: 16px;'>{percent[univ]:.1f}%</div>", unsafe_allow_html=True)
 
+
+    st.markdown('')
     st.dataframe(df, use_container_width=True)
 
     st.title("Pemetaan Waktu Tweet Berdasarkan Jam")
@@ -95,7 +94,7 @@ def show():
         ax.tick_params(axis='x', rotation=45)
 
         st.pyplot(fig)
-
+    st.title("Heat Map Aktivitas Tweet")
     heat = (
         df
         .pivot_table(

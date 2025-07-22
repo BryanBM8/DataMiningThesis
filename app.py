@@ -1,8 +1,40 @@
 import streamlit as st
-st.set_page_config(page_title="Dashboard Top University Clustering", layout="wide")
+import pandas as pd
+st.set_page_config(page_title="Dashboard Top University Clustering")
 
 
 st.title('COMPARISON OF LANGUAGE MANNERS AND OPINION HABITS IN TOP INDONESIAN UNIVERSITIES BASED ON X PLATFORM WITH TEXT CLUSTERING')
+file_path_new='all_tweet_virality.csv'
+
+df = pd.read_csv(file_path_new,
+                        header= 0)
+
+hate=pd.read_csv('hate.csv')
+# st.dataframe(hate)
+topik=pd.read_csv('topik/hasil_topik_per_tweet.csv')
+# st.dataframe(topik)
+
+# Belum ada NER dan Sarkas
+
+sentiment=pd.read_csv('hasil_prediksi_sentiment.csv')
+# st.dataframe(sentiment)
+
+hs_cols = hate.loc[:, 'HS':'HS_Strong_label'].copy()
+hs_cols['ID'] = hate['ID'] 
+
+df= df.merge(hs_cols, on='ID', how='left')
+
+topic_cols = topik.loc[:, 'topic':'topic_keywords'].copy()
+topic_cols['ID'] = topik['ID'] 
+
+df= df.merge(topic_cols, on='ID', how='left')
+
+sentiment_cols = sentiment.loc[:, 'Predicted':'Predicted Label'].copy()
+sentiment_cols['ID'] = sentiment['ID'] 
+
+df= df.merge(sentiment_cols, on='ID', how='left')
+
+st.dataframe(df)
 
 # if "df" not in st.session_state:
 #     st.session_state.df = None
