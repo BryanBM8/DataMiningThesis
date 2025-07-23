@@ -1,16 +1,14 @@
+# Virality
+
 import streamlit as st
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
 def show():
-    # st.set_page_config(layout="centered")
-    file_path_new='all_tweet_virality.csv'
-
-    df = pd.read_csv(file_path_new,
-                            header= 0)
+    df = st.session_state['df']
     usernames = df['username'].unique()
-    
+    st.header('Rata‑Rata Virality Score per Universitas')
     viral_avg = df.groupby('username')['virality_score'].mean().sort_values(ascending=False)
     viral_total = df.groupby('username')['virality_score'].sum().sort_values(ascending=False)
 
@@ -22,7 +20,6 @@ def show():
         ax=ax
     )
     ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
-    ax.set_title("Rata‑Rata Virality Score per Universitas")
     ax.set_ylabel("Rata‑Rata Virality")
     ax.set_xlabel("Universitas (username)")
     fig.tight_layout()

@@ -1,13 +1,12 @@
+# Informasi umum
+
 import streamlit as st
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
 def show():
-    file_path_new='all_tweet_virality.csv'
-
-    df = pd.read_csv(file_path_new,
-                            header= 0)
+    df = st.session_state['df']
 
     usernames = df['username'].unique()
 
