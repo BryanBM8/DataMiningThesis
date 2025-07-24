@@ -22,7 +22,7 @@ hs_cols['ID'] = hate['ID']
 df= df.merge(hs_cols, on='ID', how='left')
 
 # Topik
-topik=pd.read_csv('topik/hasil_topik_per_tweet.csv')
+topik=pd.read_csv('Topik/hasil_topik_per_tweet.csv')
 topic_cols = topik.loc[:, 'topic':'topic_keywords'].copy()
 topic_cols['ID'] = topik['ID'] 
 df= df.merge(topic_cols, on='ID', how='left')
