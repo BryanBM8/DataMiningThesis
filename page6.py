@@ -5,6 +5,8 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import plotly.express as px
+from wordcloud import WordCloud
+from collections import Counter
 
 def show():
     df = st.session_state['df']
@@ -154,3 +156,55 @@ def show():
         if col_index == 3:
             cols = st.columns(3)
             col_index = 0
+
+    df_hs = df[df['HS_label'] == 'hate'].copy()
+
+    df_hs['clean_text'] = df_hs['clean_text'].astype(str)
+
+    combined_text = " ".join(df_hs['clean_text'].dropna())
+
+    wordcloud = WordCloud(width=1000, height=500, background_color='white').generate(combined_text)
+
+    st.subheader("WordCloud untuk Hate Speech Tweets")
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.imshow(wordcloud, interpolation='bilinear')
+    ax.axis('off')
+    st.pyplot(fig)
+
+    universitas_list = df_hs['username'].dropna().unique()
+
+    univ_list = df_hs['username'].dropna().unique()
+
+    per_row = 3
+    for i in range(0, len(univ_list), per_row):
+        cols = st.columns(per_row)
+
+        for j, univ in enumerate(univ_list[i:i + per_row]):
+            with cols[j]:
+                univ_texts = df_hs[df_hs['username'] == univ]['clean_text'].dropna()
+                combined_text = " ".join(univ_texts.astype(str))
+
+                if combined_text.strip():  # cek tidak kosong
+                    wordcloud = WordCloud(width=800, height=400, background_color='white').generate(combined_text)
+
+                    fig, ax = plt.subplots(figsize=(6, 3))
+                    ax.imshow(wordcloud, interpolation='bilinear')
+                    ax.axis('off')
+                    ax.set_title(univ, fontsize=12)
+
+                    st.pyplot(fig)
+                else:
+                    st.write(f"Tidak ada tweet HS untuk {univ}")
+
+
+    df_hs = df[(df['HS_label'] == 'hate') & df['entity_role'].notna()].copy()
+
+    df_hs['entity_list'] = df_hs['entity_role'].apply(lambda x: [e.strip() for e in str(x).split(',')])
+
+    df_exp = df_hs.explode('entity_list')
+    df_exp = df_exp.rename(columns={'entity_list': 'Entity|Role'})
+
+    entity_user_counts = df_exp.groupby(['username', 'Entity|Role']).size().reset_index(name='Count')
+    
+    st.subheader("Jumlah Entity Target Hate Speech per Username")
+    st.dataframe(entity_user_counts.sort_values(by='Count', ascending=False))
