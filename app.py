@@ -44,7 +44,7 @@ df= df.merge(sarcasm_cols, on='ID', how='left')
 # st.dataframe(sarcasm)
 
 # NER
-ner=pd.read_csv('NER\hs_entity_per_tweet.csv')
+ner=pd.read_csv('NER/hs_entity_per_tweet.csv')
 # st.dataframe(ner)
 ner['entity_role'] = ner['entity'] + ' - ' + ner['role']
 ner_grouped = ner.groupby('ID')['entity_role'].agg(', '.join).reset_index()
