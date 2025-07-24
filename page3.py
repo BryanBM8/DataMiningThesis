@@ -7,9 +7,9 @@ import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import streamlit.components.v1 as components
-import networkx as nx
-from pyvis.network import Network
+# import streamlit.components.v1 as components
+# import networkx as nx
+# from pyvis.network import Network
 
 def show():
 
