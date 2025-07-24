@@ -3,12 +3,18 @@ import pandas as pd
 st.set_page_config(page_title="Dashboard Top University Clustering",layout="wide")
 
 st.title('University Dashboard: Binus University Thesis')
-st.subheader('COMPARISON OF LANGUAGE MANNERS AND OPINION HABITS IN TOP INDONESIAN UNIVERSITIES BASED ON X PLATFORM WITH TEXT CLUSTERING')
+st.header('COMPARISON OF LANGUAGE MANNERS AND OPINION HABITS IN TOP INDONESIAN UNIVERSITIES BASED ON X PLATFORM WITH TEXT CLUSTERING')
 st.subheader("Bryan Mulia, Madeline Emily, Vanness Ariya Damario")
 file_path_new='all_tweet_virality.csv'
 
 df = pd.read_csv(file_path_new,
                         header= 0)
+# Data Clean
+clean=pd.read_csv('Data Cleaning/CleanDataFull.csv')
+clean_cols = clean[['ID', 'full_text']].copy()
+clean_cols = clean_cols.rename(columns={'full_text': 'clean_text'})
+df = df.merge(clean_cols, on='ID', how='left')
+
 # Hate
 hate=pd.read_csv('hate.csv')
 hs_cols = hate.loc[:, 'HS':'HS_Strong_label'].copy()
@@ -61,8 +67,6 @@ with tabs1:
     import page1
     page1.show()
 with tabs2:
-    # import page1
-    # page1.show()
     import page2
     page2.show()
 with tabs3:
