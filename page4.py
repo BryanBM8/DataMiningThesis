@@ -7,7 +7,7 @@ import plotly.express as px
 
 def show():
     df = st.session_state['df']
-
+    st.header('Presentase Persebaran Sentiment')
 
     sentiment_counts = df['Predicted Label'].value_counts()
     sentiment_percentages = (sentiment_counts / sentiment_counts.sum()) * 100
