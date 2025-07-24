@@ -170,7 +170,7 @@ def show():
 
     wordcloud = WordCloud(width=1000, height=500, background_color='white').generate(combined_text)
 
-    st.subheader("WordCloud untuk Hate Speech Tweets")
+    st.subheader("WordCloud untuk Sarcasm Tweets")
     fig, ax = plt.subplots(figsize=(12, 6))
     ax.imshow(wordcloud, interpolation='bilinear')
     ax.axis('off')
@@ -200,3 +200,16 @@ def show():
                     st.pyplot(fig)
                 else:
                     st.write(f"Tidak ada tweet HS untuk {univ}")
+
+
+    df_hs = df[(df['sarcasm'] == 'sarcastic') & df['entity_role'].notna()].copy()
+
+    df_hs['entity_list'] = df_hs['entity_role'].apply(lambda x: [e.strip() for e in str(x).split(',')])
+
+    df_exp = df_hs.explode('entity_list')
+    df_exp = df_exp.rename(columns={'entity_list': 'Entity|Role'})
+
+    entity_user_counts = df_exp.groupby(['username', 'Entity|Role']).size().reset_index(name='Count')
+    
+    st.subheader("Jumlah Entity Target Sarcasm per Username")
+    st.dataframe(entity_user_counts.sort_values(by='Count', ascending=False))
