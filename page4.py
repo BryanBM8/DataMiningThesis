@@ -4,6 +4,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import plotly.express as px
+import altair as alt
 
 def show():
     df = st.session_state['df']
@@ -90,3 +91,39 @@ def show():
         filtered_df[['username', 'full_text', 'Predicted Label']].reset_index(drop=True),
         use_container_width=True
     )
+
+    grouped = filtered_df.groupby(['day', 'Predicted Label']).size().reset_index(name='Jumlah Tweet')
+
+    chart = alt.Chart(grouped).mark_bar().encode(
+        x=alt.X('day:N', title='Hari'),
+        y=alt.Y('Jumlah Tweet:Q', title='Jumlah Tweet'),
+        color=alt.Color('Predicted Label:N', title='Sentimen'),
+        column=alt.Column('Predicted Label:N', title='Sentimen'),
+        tooltip=['day:N', 'Predicted Label:N', 'Jumlah Tweet:Q']
+    ).properties(
+        width=100,
+        height=300,
+        title="Distribusi Sentimen per Hari berdasarkan Pilihan"
+    ).configure_axisX(
+        labelAngle=-45
+    )
+
+    st.altair_chart(chart, use_container_width=True)
+
+
+    grouped = filtered_df.groupby(['hour', 'Predicted Label']).size().reset_index(name='Jumlah Tweet')
+
+
+    chart = alt.Chart(grouped).mark_bar().encode(
+        x=alt.X('hour:O', title='Jam (0–23)'),
+        y=alt.Y('Jumlah Tweet:Q', title='Jumlah Tweet'),
+        color=alt.Color('Predicted Label:N', title='Sentimen'),
+        column=alt.Column('Predicted Label:N', title='Sentimen'),
+        tooltip=['hour:O', 'Predicted Label:N', 'Jumlah Tweet:Q']
+    ).properties(
+        width=100,
+        height=300,
+        title="Distribusi Tweet per Jam berdasarkan Sentimen yang Dipilih"
+    )
+
+    st.altair_chart(chart, use_container_width=True)

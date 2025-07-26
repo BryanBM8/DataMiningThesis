@@ -1,10 +1,12 @@
 import streamlit as st
 import pandas as pd
+
 st.set_page_config(page_title="Dashboard Top University Clustering",layout="wide")
 
 st.title('University Dashboard: Binus University Thesis')
-st.header('COMPARISON OF LANGUAGE MANNERS AND OPINION HABITS IN TOP INDONESIAN UNIVERSITIES BASED ON X PLATFORM WITH TEXT CLUSTERING')
-st.subheader("Bryan Mulia, Madeline Emily, Vanness Ariya Damario")
+st.subheader('Topic: Comparison of Language Manners and Opinion Habits in Top Indonesian Universities Based on X Platform With Text Clustering')
+st.write()
+st.subheader("Member: Bryan Mulia, Madeline Emily, Vanness Ariya Damario")
 file_path_new='all_tweet_virality.csv'
 
 df = pd.read_csv(file_path_new,
@@ -17,7 +19,7 @@ df = df.merge(clean_cols, on='ID', how='left')
 
 # Hate
 hate=pd.read_csv('hate.csv')
-hs_cols = hate.loc[:, 'HS':'HS_Strong_label'].copy()
+hs_cols = hate.loc[:, 'HS':'Abusive_label'].copy()
 hs_cols['ID'] = hate['ID'] 
 df= df.merge(hs_cols, on='ID', how='left')
 
@@ -50,18 +52,13 @@ ner['entity_role'] = ner['entity'] + ' - ' + ner['role']
 ner_grouped = ner.groupby('ID')['entity_role'].agg(', '.join).reset_index()
 df = df.merge(ner_grouped, on='ID', how='left')
 
-
-st.dataframe(df)
+df.to_csv('final.csv')
+# st.dataframe(df)
 
 if "df" not in st.session_state:
     st.session_state['df'] = df
-#     st.session_state.df = None
-#     st.session_state.risk1=None
-#     st.session_state.signifikan1=None
-#     st.session_state.signifikan2=None
-#     st.session_state.id=None
 
-tabs1, tabs2, tabs3, tabs4, tabs5, tabs6, tabs7= st.tabs( ["Informasi Umum", "Virality", "Topic Modeling", "Sentiment Analysis", "Sarcasm", "Hate", "NER"])
+tabs1, tabs2, tabs3, tabs4, tabs5, tabs6= st.tabs( ["Informasi Umum", "Virality", "Topic Modeling", "Sentiment Analysis", "Sarcasm", "Hate"])
 
 with tabs1:
     import page1
@@ -81,6 +78,4 @@ with tabs5:
 with tabs6:
     import page6
     page6.show()
-with tabs7:
-    import page7
-    page7.show()
+
