@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 def show():
     df = st.session_state['df']
     usernames = df['username'].unique()
-    st.header('Rata‑Rata Virality Score per Universitas')
+    st.header('Average Virality Score per University')
     viral_avg = df.groupby('username')['virality_score'].mean().sort_values(ascending=False)
     viral_total = df.groupby('username')['virality_score'].sum().sort_values(ascending=False)
 
@@ -20,8 +20,8 @@ def show():
         ax=ax
     )
     ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
-    ax.set_ylabel("Rata‑Rata Virality")
-    ax.set_xlabel("Universitas (username)")
+    ax.set_ylabel("Average Virality")
+    ax.set_xlabel("University")
     fig.tight_layout()
     st.pyplot(fig) 
 
@@ -38,7 +38,7 @@ def show():
         .reset_index(drop=True)
     )
 
-    st.subheader("Top Tweet Paling Viral per Universitas")
+    st.subheader("Most Viral Tweets by University")
 
     for i, row in top_viral_by_univ.iterrows():
         with st.expander(f"{i+1}. {row['username']} — Virality Score: {row['virality_score']:.2f}"):
@@ -57,11 +57,11 @@ def show():
     top_20_viral_display = top_20_viral[['username', 'full_text', 'virality_score', 'quote_count', 'reply_count', 'retweet_count', 'favorite_count']]
     pd.set_option('display.max_colwidth', None)
 
-    st.subheader("Top 20 Tweet Paling Viral")
+    st.subheader("Top 20 Most Viral Tweet")
     st.dataframe(top_20_viral_display, use_container_width=True)
 
-    st.header('Top 10 Tweet Tiap Univ')
-    selected_user = st.selectbox("Pilih Universitas (username):", usernames)
+    st.header('Top 10 Tweets from Each University')
+    selected_user = st.selectbox("Choose University:", usernames)
     top10 = (
         df[df['username'] == selected_user]
         .sort_values(by='virality_score', ascending=False)

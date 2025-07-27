@@ -8,7 +8,7 @@ import altair as alt
 
 def show():
     df = st.session_state['df']
-    st.header('Presentase Persebaran Sentiment')
+    st.header('Percentage Distribution of Sentiment')
 
     sentiment_counts = df['Predicted Label'].value_counts()
     sentiment_percentages = (sentiment_counts / sentiment_counts.sum()) * 100
@@ -24,13 +24,13 @@ def show():
         names='Sentiment',
         values='Count',  
         color='Sentiment',
-        title="Distribusi Sentimen Umum (Berdasarkan Jumlah)",
+        title="General Sentiment Distribution (Based on Number)",
         hole=0.4
     )
 
     fig.update_traces(
         textinfo='percent+label',
-        hovertemplate='%{label}<br>Jumlah: %{value}<extra></extra>'
+        hovertemplate='%{label}<br>Total: %{value}<extra></extra>'
     )
 
     st.plotly_chart(fig)
@@ -57,7 +57,7 @@ def show():
         )
         fig.update_traces(
             textinfo='percent+label',
-            hovertemplate='%{label}<br>Jumlah: %{value}<extra></extra>'
+            hovertemplate='%{label}<br>Total: %{value}<extra></extra>'
         )
 
         with cols[col_index]:
@@ -72,38 +72,38 @@ def show():
 
     df = df.dropna(subset=['full_text', 'Predicted Label', 'username'])
 
-    st.title("Lihat Tweet berdasarkan Sentimen & Universitas")
+    st.title("View Tweets by Sentiment & University")
 
-    selected_univ = st.selectbox("Pilih Universitas", sorted(df['username'].dropna().unique()), key="select_univ_sentiment")
+    selected_univ = st.selectbox("Choose University", sorted(df['username'].dropna().unique()), key="select_univ_sentiment")
 
     sentiments = df['Predicted Label'].unique()
-    selected_sentiment = st.radio("Pilih Sentimen", sorted(sentiments), key="selected_sentiment")
+    selected_sentiment = st.radio("Choose Sentiment", sorted(sentiments), key="selected_sentiment")
 
     filtered_df = df[
         (df['username'] == selected_univ) &
         (df['Predicted Label'] == selected_sentiment)
     ]
 
-    st.subheader(f"Tweet dari {selected_univ} dengan sentimen {selected_sentiment}")
-    st.write(f"Jumlah tweet ditemukan: {len(filtered_df)}")
+    st.subheader(f"Tweet from {selected_univ} with {selected_sentiment} sentiment")
+    st.write(f"Number of tweets found: {len(filtered_df)}")
 
     st.dataframe(
         filtered_df[['username', 'full_text', 'Predicted Label']].reset_index(drop=True),
         use_container_width=True
     )
 
-    grouped = filtered_df.groupby(['day', 'Predicted Label']).size().reset_index(name='Jumlah Tweet')
+    grouped = filtered_df.groupby(['day', 'Predicted Label']).size().reset_index(name='Total Tweet')
 
     chart = alt.Chart(grouped).mark_bar().encode(
         x=alt.X('day:N', title='Hari'),
-        y=alt.Y('Jumlah Tweet:Q', title='Jumlah Tweet'),
+        y=alt.Y('Total Tweet:Q', title='Total Tweet'),
         color=alt.Color('Predicted Label:N', title='Sentimen'),
         column=alt.Column('Predicted Label:N', title='Sentimen'),
-        tooltip=['day:N', 'Predicted Label:N', 'Jumlah Tweet:Q']
+        tooltip=['day:N', 'Predicted Label:N', 'Total Tweet:Q']
     ).properties(
         width=100,
         height=300,
-        title="Distribusi Sentimen per Hari berdasarkan Pilihan"
+        title="Sentiment Distribution per Day based on Choice"
     ).configure_axisX(
         labelAngle=-45
     )
@@ -111,19 +111,19 @@ def show():
     st.altair_chart(chart, use_container_width=True)
 
 
-    grouped = filtered_df.groupby(['hour', 'Predicted Label']).size().reset_index(name='Jumlah Tweet')
+    grouped = filtered_df.groupby(['hour', 'Predicted Label']).size().reset_index(name='Total Tweet')
 
 
     chart = alt.Chart(grouped).mark_bar().encode(
         x=alt.X('hour:O', title='Jam (0–23)'),
-        y=alt.Y('Jumlah Tweet:Q', title='Jumlah Tweet'),
-        color=alt.Color('Predicted Label:N', title='Sentimen'),
-        column=alt.Column('Predicted Label:N', title='Sentimen'),
-        tooltip=['hour:O', 'Predicted Label:N', 'Jumlah Tweet:Q']
+        y=alt.Y('Total Tweet:Q', title='Total Tweet'),
+        color=alt.Color('Predicted Label:N', title='Sentiment'),
+        column=alt.Column('Predicted Label:N', title='Sentiment'),
+        tooltip=['hour:O', 'Predicted Label:N', 'Total Tweet:Q']
     ).properties(
         width=100,
         height=300,
-        title="Distribusi Tweet per Jam berdasarkan Sentimen yang Dipilih"
+        title="Distribution of Tweets per Hour based on Selected Sentiment"
     )
 
     st.altair_chart(chart, use_container_width=True)

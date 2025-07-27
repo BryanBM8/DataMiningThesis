@@ -3,10 +3,8 @@ import pandas as pd
 
 st.set_page_config(page_title="Dashboard Top University Clustering",layout="wide")
 
-st.title('University Dashboard: Binus University Thesis')
+st.title('University Dashboard')
 st.subheader('Topic: Comparison of Language Manners and Opinion Habits in Top Indonesian Universities Based on X Platform With Text Clustering')
-st.write()
-st.subheader("Member: Bryan Mulia, Madeline Emily, Vanness Ariya Damario")
 file_path_new='all_tweet_virality.csv'
 
 df = pd.read_csv(file_path_new,
@@ -58,7 +56,7 @@ df.to_csv('final.csv')
 if "df" not in st.session_state:
     st.session_state['df'] = df
 
-tabs1, tabs2, tabs3, tabs4, tabs5, tabs6= st.tabs( ["Informasi Umum", "Virality", "Topic Modeling", "Sentiment Analysis", "Sarcasm", "Hate"])
+tabs1, tabs2, tabs3, tabs4, tabs5, tabs6= st.tabs( ["General Information", "Virality", "Topic Modeling", "Sentiment Analysis", "Sarcasm", "Hate"])
 
 with tabs1:
     import page1

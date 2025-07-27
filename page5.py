@@ -24,13 +24,13 @@ def show():
         names='sarcasm',
         values='Count',  
         color='sarcasm',
-        title="Distribusi Sarcasm Umum (Berdasarkan Jumlah)",
+        title="General Sarcasm Distribution (Based on Number)",
         hole=0.4
     )
 
     fig.update_traces(
         textinfo='percent+label',
-        hovertemplate='%{label}<br>Jumlah: %{value}<extra></extra>'
+        hovertemplate='%{label}<br>Total: %{value}<extra></extra>'
     )
 
     st.plotly_chart(fig)
@@ -57,7 +57,7 @@ def show():
         )
         fig.update_traces(
             textinfo='percent+label',
-            hovertemplate='%{label}<br>Jumlah: %{value}<extra></extra>'
+            hovertemplate='%{label}<br>Total: %{value}<extra></extra>'
         )
 
         with cols[col_index]:
@@ -73,20 +73,20 @@ def show():
 
     df = df.dropna(subset=['full_text', 'sarcasm', 'username'])
 
-    st.title("Lihat Tweet berdasarkan sarcasm & Universitas")
+    st.title("View Tweets based on Sarcasm & University")
 
-    selected_univ = st.selectbox("Pilih Universitas", sorted(df['username'].dropna().unique()), key="select_univ_sarcasmt")
+    selected_univ = st.selectbox("Choose University", sorted(df['username'].dropna().unique()), key="select_univ_sarcasmt")
 
     sarcasmts = df['sarcasm'].unique()
-    selected_sarcasmt = st.radio("Pilih sarcasm", sorted(sarcasmts), key="selected_sarcasmt")
+    selected_sarcasmt = st.radio("Choose sarcasm or not sarcasm", sorted(sarcasmts), key="selected_sarcasmt")
 
     filtered_df = df[
         (df['username'] == selected_univ) &
         (df['sarcasm'] == selected_sarcasmt)
     ]
 
-    st.subheader(f"Tweet dari {selected_univ} dengan sarcasm {selected_sarcasmt}")
-    st.write(f"Jumlah tweet ditemukan: {len(filtered_df)}")
+    st.subheader(f"Tweet from {selected_univ} with {selected_sarcasmt} label")
+    st.write(f"Total tweets found: {len(filtered_df)}")
 
     st.dataframe(
         filtered_df[['username', 'full_text', 'sarcasm']].reset_index(drop=True),
@@ -211,5 +211,5 @@ def show():
 
     entity_user_counts = df_exp.groupby(['username', 'Entity|Role']).size().reset_index(name='Count')
     
-    st.subheader("Jumlah Entity Target Sarcasm per Username")
+    st.subheader("Total Entity Target Sarcasm per Username")
     st.dataframe(entity_user_counts.sort_values(by='Count', ascending=False))

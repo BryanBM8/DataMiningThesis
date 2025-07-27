@@ -11,7 +11,7 @@ def show():
 
     usernames = df['username'].unique()
 
-    st.title("Pembagian Tweet per Universitas")
+    st.title("Distribution of Tweets per University")
     if 'username' not in df.columns:
         st.error("Kolom 'univ' tidak ditemukan.")
         st.stop()
@@ -37,7 +37,7 @@ def show():
     st.markdown('')
     # st.dataframe(df, use_container_width=True)
 
-    st.title("Pemetaan Waktu Tweet Berdasarkan Jam")
+    st.title("Mapping Tweets by Time Based on Hours")
 
     charts=[]
     for user in usernames:
@@ -48,13 +48,13 @@ def show():
             .mark_bar(color='skyblue')
             .encode(
                 x=alt.X('hour:O', bin=alt.Bin(maxbins=24), title='Jam (0-23)'),
-                y=alt.Y('count()', title='Jumlah Tweet'),
+                y=alt.Y('count()', title='Total Tweet'),
                 tooltip=['hour', 'count()']
             )
             .properties(
                 width=250,
                 height=200,
-                title=f"Distribusi Jam Tweet: {user}"
+                title=f"Tweet Distribution of {user}"
             )
         )
         charts.append(hist)
@@ -63,16 +63,16 @@ def show():
         row = alt.hconcat(*charts[i:i+3]).resolve_scale(y='shared')
         st.altair_chart(row, use_container_width=True)
 
-    st.title('Distribusi Tweet Per Hari')
+    st.title('Distribution of Tweets per Day')
     day_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
     selected_users = st.multiselect(
-        "Pilih Username:", usernames, default=list(usernames), 
+        "Choose Username:", usernames, default=list(usernames), 
     key="user_selector"
     )
 
     selected_days = st.multiselect(
-        "Pilih Hari:", day_order, default=day_order, 
+        "Choose Day:", day_order, default=day_order, 
     key="day_selector"
     )
 
@@ -82,14 +82,14 @@ def show():
     ]
 
     if df_filtered.empty:
-        st.warning("Tidak ada data yang cocok dengan filter yang dipilih.")
+        st.warning("No data matches the selected filter.")
     else:
         bar_chart = (
             alt.Chart(df_filtered)
             .mark_bar()
             .encode(
-                x=alt.X('day:N', sort=day_order, title='Hari'),
-                y=alt.Y('count():Q', title='Jumlah Tweet'),
+                x=alt.X('day:N', sort=day_order, title='Day'),
+                y=alt.Y('count():Q', title='Total Tweet'),
                 color='username:N',
                 tooltip=['day', 'username', 'count()']
             )
@@ -101,7 +101,7 @@ def show():
         st.altair_chart(bar_chart, use_container_width=True)
 
 
-    st.title("Heatmap Aktivitas Tweet")
+    st.title("Heatmap Tweet Activity")
 
     heatmap_data = (
         df.groupby(['day', 'hour'])
@@ -124,21 +124,21 @@ def show():
         .properties(
             width=700,
             height=300,
-            title="Aktivitas Tweet per Jam & Hari"
+            title="Tweet Activity per Hour & Day"
         )
     )
 
     st.altair_chart(heatmap_chart, use_container_width=True)
-    st.title('Distribusi Sentimen Per Hari')
+    st.title('Sentiment Distribution per Day')
     day_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
     df['day'] = pd.Categorical(df['day'], categories=day_order, ordered=True)
 
-    grouped = df.groupby(['day', 'Predicted Label']).size().reset_index(name='Jumlah Tweet')
+    grouped = df.groupby(['day', 'Predicted Label']).size().reset_index(name='Total Tweet')
     chart = alt.Chart(grouped).mark_bar().encode(
         x=alt.X('day:N', title='Hari'),
-        y=alt.Y('Jumlah Tweet:Q', title='Jumlah Tweet'),
+        y=alt.Y('Total Tweet:Q', title='Total Tweet'),
         color=alt.Color('Predicted Label:N', title='Sentimen'),
-        tooltip=['day', 'Predicted Label', 'Jumlah Tweet'],
+        tooltip=['day', 'Predicted Label', 'Total Tweet'],
     ).properties(
 
     ).configure_axis(
@@ -150,14 +150,14 @@ def show():
 
     chart = alt.Chart(grouped).mark_bar().encode(
         x=alt.X('day:N', title='Hari', sort=day_order),
-        y=alt.Y('Jumlah Tweet:Q', title='Jumlah Tweet'),
+        y=alt.Y('Total Tweet:Q', title='Total Tweet'),
         color=alt.Color('Predicted Label:N', title='Sentimen'),
-        tooltip=['day', 'Predicted Label', 'Jumlah Tweet']
+        tooltip=['day', 'Predicted Label', 'Total Tweet']
     )
 
     chart = chart.encode(
         x=alt.X('day:N', title='Hari', sort=day_order),
-        y='Jumlah Tweet:Q',
+        y='Total Tweet:Q',
         color='Predicted Label:N'
     ).properties(
         width=600,
@@ -187,7 +187,7 @@ def show():
 
     summary = total_counts.merge(top_user_summary, on='entity_role', how='left')
 
-    st.title("Entity Role Terbanyak (Umum & Per Username)")
+    st.title("Most Entity Roles (General & Per Username)")
     st.dataframe(summary)
     st.bar_chart(summary.set_index('entity_role')['Total Count'])
 

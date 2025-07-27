@@ -25,13 +25,13 @@ def show():
         names='hate',
         values='Count',  
         color='hate',
-        title="Distribusi hate Umum (Berdasarkan Jumlah)",
+        title="General distribution of hate (based on quantity)",
         hole=0.4
     )
 
     fig.update_traces(
         textinfo='percent+label',
-        hovertemplate='%{label}<br>Jumlah: %{value}<extra></extra>'
+        hovertemplate='%{label}<br>Total: %{value}<extra></extra>'
     )
 
     st.plotly_chart(fig)
@@ -58,7 +58,7 @@ def show():
         )
         fig.update_traces(
             textinfo='percent+label',
-            hovertemplate='%{label}<br>Jumlah: %{value}<extra></extra>'
+            hovertemplate='%{label}<br>Total: %{value}<extra></extra>'
         )
 
         with cols[col_index]:
@@ -72,20 +72,20 @@ def show():
 
     df = df.dropna(subset=['full_text', 'HS_label', 'username'])
 
-    st.title("Lihat Tweet berdasarkan Hate & Universitas")
+    st.title("Tweets based on Hate & Universities")
 
-    selected_univ = st.selectbox("Pilih Universitas", sorted(df['username'].dropna().unique()), key="select_univ_hate")
+    selected_univ = st.selectbox("Choose University", sorted(df['username'].dropna().unique()), key="select_univ_hate")
 
     hates = df['HS_label'].unique()
-    selected_hate = st.radio("Pilih hate", sorted(hates), key="selected_hate")
+    selected_hate = st.radio("Choose hate or not hate", sorted(hates), key="selected_hate")
 
     filtered_df = df[
         (df['username'] == selected_univ) &
         (df['HS_label'] == selected_hate)
     ]
 
-    st.subheader(f"Tweet dari {selected_univ} dengan {selected_hate}")
-    st.write(f"Jumlah tweet ditemukan: {len(filtered_df)}")
+    st.subheader(f"Tweet from {selected_univ} with {selected_hate} label")
+    st.write(f"Total found tweet: {len(filtered_df)}")
 
     st.dataframe(
         filtered_df[['username', 'full_text', 'HS_label']].reset_index(drop=True),
@@ -101,7 +101,7 @@ def show():
 
     hate_sarcasm['Sarcasm'] = hate_sarcasm['sarcasm'].map({'sarcastic': 'Sarcastic', 'not_sarcastic': 'Not Sarcastic'})
 
-    st.subheader("Distribusi Umum Hate & Sarkasme")
+    st.subheader("General Distribution of Hate & Sarcasm")
     st.dataframe(hate_sarcasm[['Sarcasm', 'HS_label', 'count']])
 
     fig = px.bar(
@@ -111,13 +111,13 @@ def show():
         color='Sarcasm',
         barmode='group',
         text='count',
-        title="Distribusi Sarkas vs Hate (Gabungan Seluruh Tweet)"
+        title="Distribution of Sarcasm vs Hate (All Tweets Combined)"
     )
     st.plotly_chart(fig)
 
 
 
-    st.subheader("Distribusi Hate pada Tweet Sarkastik per Universitas")
+    st.subheader("Distribution of Hate in Sarcastic Tweets per University")
 
     sarkas_df = df[df['sarcasm'] == 'sarcastic']
 
@@ -128,8 +128,8 @@ def show():
 )
 
     hate_sarcasm_by_user['Sarcasm'] = hate_sarcasm_by_user['sarcasm'].map({
-        'sarcastic': 'Sarkas',
-        'not_sarcastic': 'Non-Sarkas'
+        'sarcastic': 'sarcastic',
+        'not_sarcastic': 'not_sarcastic'
     })
 
     usernames = hate_sarcasm_by_user['username'].unique()
@@ -146,7 +146,7 @@ def show():
             color='Sarcasm',
             barmode='group',
             text='Count',
-            title=f"Hate Tweet Sarkas vs Non-Sarkas - {univ}"
+            title=f"Hate Tweet Sarcasm vs Non-Sarcasm - {univ}"
         )
 
         with cols[col_index]:
@@ -165,7 +165,7 @@ def show():
 
     wordcloud = WordCloud(width=1000, height=500, background_color='white').generate(combined_text)
 
-    st.subheader("WordCloud untuk Hate Speech Tweets")
+    st.subheader("WordCloud of Hate Speech Tweets")
     fig, ax = plt.subplots(figsize=(12, 6))
     ax.imshow(wordcloud, interpolation='bilinear')
     ax.axis('off')
@@ -194,7 +194,7 @@ def show():
 
                     st.pyplot(fig)
                 else:
-                    st.write(f"Tidak ada tweet HS untuk {univ}")
+                    st.write(f"No Hate tweets for{univ}")
 
 
     df_hs = df[(df['HS_label'] == 'hate') & df['entity_role'].notna()].copy()
@@ -206,5 +206,5 @@ def show():
 
     entity_user_counts = df_exp.groupby(['username', 'Entity|Role']).size().reset_index(name='Count')
     
-    st.subheader("Jumlah Entity Target Hate Speech per Username")
+    st.subheader("Total Entity Target Hate Speech per Username")
     st.dataframe(entity_user_counts.sort_values(by='Count', ascending=False))
