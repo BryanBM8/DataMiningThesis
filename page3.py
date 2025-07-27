@@ -178,3 +178,20 @@ def show():
 
     st.title("User Topic Similarity Graph")
     st.plotly_chart(fig, use_container_width=True)
+
+    st.markdown("""
+        ### User Topic Similarity Graph
+
+        This graph visualizes the **similarity of discussion topics** among various university-related Twitter accounts (commonly referred to as "fess" accounts).  
+        Each **node** represents a user account, while the **edges** (lines) connecting nodes indicate the level of topic similarity based on their posted tweets.
+
+        #### Key Points
+        - **Node Size:** Reflects the level of activity or centrality.  
+        Larger nodes represent accounts that interact more or share similar topics with many peers.  
+        - **Edge Thickness & Color:** Show the strength of similarity between users.  
+        Thicker and darker edges indicate higher similarity.  
+        - **Color Scale (Right Bar):** Represents the normalized topic similarity values.  
+        Lighter blue means lower similarity, while darker blue indicates stronger similarity.  
+
+        ---
+        """)
