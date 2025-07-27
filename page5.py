@@ -9,7 +9,7 @@ from wordcloud import WordCloud
 
 def show():
     df = st.session_state['df']
-
+    st.title('Percentage Distribution of Sarcasm')
     sarcasm_counts = df['sarcasm'].value_counts()
     sarcasm_percentages = (sarcasm_counts / sarcasm_counts.sum()) * 100
 

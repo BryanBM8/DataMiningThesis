@@ -10,6 +10,7 @@ from collections import Counter
 
 def show():
     df = st.session_state['df']
+    st.header('Percentage Distribution of Hate')
     df['HS_label'] = df['HS_label'].replace({1: 'hate', 0: 'non_hate'})
     hate_counts = df['HS_label'].value_counts()
     hate_percentages = (hate_counts / hate_counts.sum()) * 100
@@ -25,7 +26,7 @@ def show():
         names='hate',
         values='Count',  
         color='hate',
-        title="General distribution of hate (based on quantity)",
+        title="General Hate Distribution (Based on Number)",
         hole=0.4
     )
 

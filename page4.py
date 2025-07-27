@@ -8,7 +8,7 @@ import altair as alt
 
 def show():
     df = st.session_state['df']
-    st.header('Percentage Distribution of Sentiment')
+    st.title('Percentage Distribution of Sentiment')
 
     sentiment_counts = df['Predicted Label'].value_counts()
     sentiment_percentages = (sentiment_counts / sentiment_counts.sum()) * 100

@@ -5,6 +5,8 @@ st.set_page_config(page_title="Dashboard Top University Clustering",layout="wide
 
 st.title('University Dashboard')
 st.subheader('Topic: Comparison of Language Manners and Opinion Habits in Top Indonesian Universities Based on X Platform With Text Clustering')
+# st.markdown()
+st.divider()
 file_path_new='all_tweet_virality.csv'
 
 df = pd.read_csv(file_path_new,
@@ -56,6 +58,41 @@ df.to_csv('final.csv')
 if "df" not in st.session_state:
     st.session_state['df'] = df
 
+usernames = df['username'].unique()
+
+st.subheader("Distribution of Tweets per University")
+
+counts  = df['username'].value_counts().sort_index()
+total   = counts.sum()
+percent = counts / total * 100
+
+
+
+per_row = 3
+univ_list = counts.index.tolist()
+
+for i in range(0, len(univ_list), per_row):
+    cols = st.columns(per_row)
+    for j, univ in enumerate(univ_list[i:i + per_row]):
+        with cols[j]:
+            st.markdown(f"<div style='font-size: 16px; font-weight: bold;'>{univ}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='font-size: 16 px; '>{counts[univ]} tweet</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='color: gray; font-size: 16px;'>{percent[univ]:.1f}%</div>", unsafe_allow_html=True)
+st.markdown("""
+    <style>
+    /* Make the tab labels larger and adjust padding */
+    .stTabs [data-baseweb="tab"] {
+        font-size: 18px !important;  /* increase font size */
+        padding: 12px 24px !important;  /* adjust tab padding */
+    }
+
+    /* Optional: make selected tab bold */
+    .stTabs [data-baseweb="tab"][aria-selected="true"] {
+        font-weight: bold;
+        color: #1E88E5;
+    }
+    </style>
+""", unsafe_allow_html=True)
 tabs1, tabs2, tabs3, tabs4, tabs5, tabs6= st.tabs( ["General Information", "Virality", "Topic Modeling", "Sentiment Analysis", "Sarcasm", "Hate"])
 
 with tabs1:

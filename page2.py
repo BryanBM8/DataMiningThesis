@@ -6,6 +6,40 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 def show():
+
+
+    st.markdown("""
+        ## How the Virality Score is Calculated
+
+        The **virality score** is designed to identify which tweets are the most impactful or "viral" based on user interactions, such as **replies, quotes, retweets, and likes**.  
+        This calculation is based on the **ranking logic of Twitter (X)**, made public in 2023 when parts of their recommendation algorithm were open-sourced — specifically, the engagement weights defined in `ScoredTweetsParam.scala`.
+
+        ### **Theoretical Basis (Twitter/X Algorithm)**
+
+        According to Twitter’s source code:
+        - **Replies (comments)** carry the highest weight (around **13.5 points per reply**) because they represent meaningful two-way interaction.
+        - **Quote Tweets** (retweets with comments) are weighted higher than regular retweets (around **1.5 points per quote**).
+        - **Retweets** are significant signals (around **1.0 point per retweet**).
+        - **Likes (Favorites)** are considered weaker signals (around **0.5 points per like**).
+        - Other actions (like bookmarks or profile clicks) are also weighted in the original algorithm, but are excluded here as they are not always available in the dataset.
+
+        These weights are **not arbitrary** — they are derived from Twitter’s actual configuration for ranking tweets, as seen in their open-sourced algorithm.
+
+        ### **Virality Score Formula**
+
+        For each tweet:
+
+        Virality Score = (13.5 × Reply Count)
+        + (1.5 × Quote Count)
+        + (1.0 × Retweet Count)
+        + (0.5 × Like Count)
+
+        A higher score indicates a more "viral" tweet.  
+        Optionally, the score can be **normalized by follower count** to make comparisons fair between small and large accounts.
+
+        Source: https://github.com/twitter/the-algorithm-ml/blob/main/projects/home/recap/README.md
+        """)
+    
     df = st.session_state['df']
     usernames = df['username'].unique()
     st.header('Average Virality Score per University')

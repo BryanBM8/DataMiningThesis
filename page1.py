@@ -11,30 +11,7 @@ def show():
 
     usernames = df['username'].unique()
 
-    st.title("Distribution of Tweets per University")
-    if 'username' not in df.columns:
-        st.error("Kolom 'univ' tidak ditemukan.")
-        st.stop()
-
-    counts  = df['username'].value_counts().sort_index()
-    total   = counts.sum()
-    percent = counts / total * 100
-
-
-
-    per_row = 3
-    univ_list = counts.index.tolist()
-
-    for i in range(0, len(univ_list), per_row):
-        cols = st.columns(per_row)
-        for j, univ in enumerate(univ_list[i:i + per_row]):
-            with cols[j]:
-                st.markdown(f"<div style='font-size: 32px; font-weight: bold;'>{univ}</div>", unsafe_allow_html=True)
-                st.markdown(f"<div style='font-size: 16 px; '>{counts[univ]} tweet</div>", unsafe_allow_html=True)
-                st.markdown(f"<div style='color: gray; font-size: 16px;'>{percent[univ]:.1f}%</div>", unsafe_allow_html=True)
-
-
-    st.markdown('')
+   
     # st.dataframe(df, use_container_width=True)
 
     st.title("Mapping Tweets by Time Based on Hours")
