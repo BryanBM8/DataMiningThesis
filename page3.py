@@ -84,114 +84,114 @@ def show():
 
 
 
-    docs = [" ".join(keywords) if keywords else "no_keyword" for keywords in df["topic_keywords"]]
-    usernames = df["username"].tolist()
+    # docs = [" ".join(keywords) if keywords else "no_keyword" for keywords in df["topic_keywords"]]
+    # usernames = df["username"].tolist()
 
-    vectorizer = TfidfVectorizer(stop_words=None, token_pattern=r"(?u)\b\w+\b")
-    tfidf_matrix = vectorizer.fit_transform(docs)
+    # vectorizer = TfidfVectorizer(stop_words=None, token_pattern=r"(?u)\b\w+\b")
+    # tfidf_matrix = vectorizer.fit_transform(docs)
 
-    similarity_matrix = cosine_similarity(tfidf_matrix)
+    # similarity_matrix = cosine_similarity(tfidf_matrix)
 
-    G = nx.Graph()
+    # G = nx.Graph()
 
-    for user, keywords in zip(usernames, docs):
-        G.add_node(user, keywords=keywords)
-
-
-    threshold = 0.2
-    for i, user1 in enumerate(usernames):
-        for j, user2 in enumerate(usernames):
-            if i < j and similarity_matrix[i, j] > threshold:
-                G.add_edge(user1, user2, weight=similarity_matrix[i, j])
-
-    node_weights = {}
-    for node in G.nodes():
-        weights = [d["weight"] for _, _, d in G.edges(node, data=True)]
-        node_weights[node] = sum(weights)/len(weights) if weights else 0
+    # for user, keywords in zip(usernames, docs):
+    #     G.add_node(user, keywords=keywords)
 
 
-    norm = mcolors.Normalize(vmin=min(node_weights.values()), vmax=max(node_weights.values()))
-    colors = {node: norm(value) for node, value in node_weights.items()}
-    pos = nx.spring_layout(G, seed=42)
+    # threshold = 0.2
+    # for i, user1 in enumerate(usernames):
+    #     for j, user2 in enumerate(usernames):
+    #         if i < j and similarity_matrix[i, j] > threshold:
+    #             G.add_edge(user1, user2, weight=similarity_matrix[i, j])
 
-    edge_x, edge_y = [], []
-    for edge in G.edges():
-        x0, y0 = pos[edge[0]]
-        x1, y1 = pos[edge[1]]
-        edge_x.extend([x0, x1, None])
-        edge_y.extend([y0, y1, None])
+    # node_weights = {}
+    # for node in G.nodes():
+    #     weights = [d["weight"] for _, _, d in G.edges(node, data=True)]
+    #     node_weights[node] = sum(weights)/len(weights) if weights else 0
 
-    edge_trace = go.Scatter(
-        x=edge_x, y=edge_y,
-        line=dict(width=1, color='#888'),
-        hoverinfo='none',
-        mode='lines'
-    )
 
-    node_x, node_y, node_text, node_color = [], [], [], []
-    for node in G.nodes():
-        x, y = pos[node]
-        node_x.append(x)
-        node_y.append(y)
-        node_text.append(f"{node}<br>Keywords: {G.nodes[node]['keywords']}")
-        node_color.append(colors[node])  
-    import matplotlib.cm as cm
-    cmap = cm.get_cmap("Blues")
-    node_color = [f"rgba{cmap(c, bytes=True)}" for c in node_color]
-    node_values = [node_weights[node] for node in G.nodes()]
+    # norm = mcolors.Normalize(vmin=min(node_weights.values()), vmax=max(node_weights.values()))
+    # colors = {node: norm(value) for node, value in node_weights.items()}
+    # pos = nx.spring_layout(G, seed=42)
 
-    node_trace = go.Scatter(
-        x=node_x, y=node_y,
-        mode='markers+text',
-        text=[node for node in G.nodes()],
-        textposition="top center",
-        hoverinfo='text',
-        marker=dict(
-            showscale=True,
-            colorscale='Blues',
-            reversescale=True,
-            color=node_values,
-            size=30,
-            colorbar=dict(
-                thickness=15,
-                title=dict(
-                    text='Topic Similarity',
-                    side='right'  
-                ),
-                xanchor='left'
-        ),
-            line_width=2
-        ),
-        hovertext=node_text
-    )
+    # edge_x, edge_y = [], []
+    # for edge in G.edges():
+    #     x0, y0 = pos[edge[0]]
+    #     x1, y1 = pos[edge[1]]
+    #     edge_x.extend([x0, x1, None])
+    #     edge_y.extend([y0, y1, None])
 
-    fig = go.Figure(data=[edge_trace, node_trace],
-                    layout=go.Layout(
-                        title='User Topic Similarity Network',
-                        title_x=0.5,
-                        showlegend=False,
-                        hovermode='closest',
-                        margin=dict(b=0,l=0,r=0,t=40),
-                        xaxis=dict(showgrid=False, zeroline=False),
-                        yaxis=dict(showgrid=False, zeroline=False)
-                    ))
+    # edge_trace = go.Scatter(
+    #     x=edge_x, y=edge_y,
+    #     line=dict(width=1, color='#888'),
+    #     hoverinfo='none',
+    #     mode='lines'
+    # )
 
-    st.title("User Topic Similarity Graph")
-    st.plotly_chart(fig, use_container_width=True)
+    # node_x, node_y, node_text, node_color = [], [], [], []
+    # for node in G.nodes():
+    #     x, y = pos[node]
+    #     node_x.append(x)
+    #     node_y.append(y)
+    #     node_text.append(f"{node}<br>Keywords: {G.nodes[node]['keywords']}")
+    #     node_color.append(colors[node])  
+    # import matplotlib.cm as cm
+    # cmap = cm.get_cmap("Blues")
+    # node_color = [f"rgba{cmap(c, bytes=True)}" for c in node_color]
+    # node_values = [node_weights[node] for node in G.nodes()]
 
-    st.markdown("""
-        ### User Topic Similarity Graph
+    # node_trace = go.Scatter(
+    #     x=node_x, y=node_y,
+    #     mode='markers+text',
+    #     text=[node for node in G.nodes()],
+    #     textposition="top center",
+    #     hoverinfo='text',
+    #     marker=dict(
+    #         showscale=True,
+    #         colorscale='Blues',
+    #         reversescale=True,
+    #         color=node_values,
+    #         size=30,
+    #         colorbar=dict(
+    #             thickness=15,
+    #             title=dict(
+    #                 text='Topic Similarity',
+    #                 side='right'  
+    #             ),
+    #             xanchor='left'
+    #     ),
+    #         line_width=2
+    #     ),
+    #     hovertext=node_text
+    # )
 
-        This graph visualizes the **similarity of discussion topics** among various university-related Twitter accounts (commonly referred to as "fess" accounts).  
-        Each **node** represents a user account, while the **edges** (lines) connecting nodes indicate the level of topic similarity based on their posted tweets.
+    # fig = go.Figure(data=[edge_trace, node_trace],
+    #                 layout=go.Layout(
+    #                     title='User Topic Similarity Network',
+    #                     title_x=0.5,
+    #                     showlegend=False,
+    #                     hovermode='closest',
+    #                     margin=dict(b=0,l=0,r=0,t=40),
+    #                     xaxis=dict(showgrid=False, zeroline=False),
+    #                     yaxis=dict(showgrid=False, zeroline=False)
+    #                 ))
 
-        #### Key Points
-        - **Node Size:** Reflects the level of activity or centrality.  
-        Larger nodes represent accounts that interact more or share similar topics with many peers.  
-        - **Edge Thickness & Color:** Show the strength of similarity between users.  
-        Thicker and darker edges indicate higher similarity.  
-        - **Color Scale (Right Bar):** Represents the normalized topic similarity values.  
-        Lighter blue means lower similarity, while darker blue indicates stronger similarity.  
+    # st.title("User Topic Similarity Graph")
+    # st.plotly_chart(fig, use_container_width=True)
 
-        ---
-        """)
+    # st.markdown("""
+    #     ### User Topic Similarity Graph
+
+    #     This graph visualizes the **similarity of discussion topics** among various university-related Twitter accounts (commonly referred to as "fess" accounts).  
+    #     Each **node** represents a user account, while the **edges** (lines) connecting nodes indicate the level of topic similarity based on their posted tweets.
+
+    #     #### Key Points
+    #     - **Node Size:** Reflects the level of activity or centrality.  
+    #     Larger nodes represent accounts that interact more or share similar topics with many peers.  
+    #     - **Edge Thickness & Color:** Show the strength of similarity between users.  
+    #     Thicker and darker edges indicate higher similarity.  
+    #     - **Color Scale (Right Bar):** Represents the normalized topic similarity values.  
+    #     Lighter blue means lower similarity, while darker blue indicates stronger similarity.  
+
+    #     ---
+    #     """)
