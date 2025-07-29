@@ -71,6 +71,10 @@ percent = counts / total * 100
 per_row = 3
 univ_list = counts.index.tolist()
 
+
+total_tweet = len(df)
+st.metric(label="Total Tweets (Overall)", value=total_tweet)
+st.markdown('')
 for i in range(0, len(univ_list), per_row):
     cols = st.columns(per_row)
     for j, univ in enumerate(univ_list[i:i + per_row]):
