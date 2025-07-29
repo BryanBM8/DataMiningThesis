@@ -120,7 +120,7 @@ def show():
     ]
 
     top_10_hate = (
-        df.loc[df["HS_label"].str.lower() == '1.0', cols_needed]
+        df.loc[df["HS_label"].astype(str) == '1.0', cols_needed]
         .sort_values(by="virality_score", ascending=False)
         .head(10)
         .reset_index(drop=True)
@@ -132,6 +132,7 @@ def show():
         st.write("Tidak ada tweet dengan label Hate yang memenuhi kriteria.")
     else:
         for i, row in top_10_hate.iterrows():
+            hs_label_text = "Hate" if str(row["HS_label"]) == "1.0" else "Non-Hate"
             with st.expander(f"{i+1}. {row['username']} — Virality Score: {row['virality_score']:.2f}"):
                 st.write(row["full_text"])
                 st.markdown(
@@ -142,7 +143,7 @@ def show():
                     **🔗 Quote:** {row['quote_count']}  
 
                     ---
-                    **HS Label:** {row['HS_label'].capitalize()}  
+                    **HS Label:** {hs_label_text}  
                     **Predicted Sentiment:** {row['Predicted Label']}  
                     **Sarcasm Detected:** {row['sarcasm']}
                     """
