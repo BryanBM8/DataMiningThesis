@@ -169,6 +169,7 @@ def show():
         st.write("Tidak ada tweet dengan label Sarcasm yang memenuhi kriteria.")
     else:
         for i, row in top_10_sarcasm.iterrows():
+            hs_label_text = "Hate" if str(row["HS_label"]) == "1.0" else "Non-Hate"
             with st.expander(f"{i+1}. {row['username']} — Virality Score: {row['virality_score']:.2f}"):
                 st.write(row["full_text"])
                 st.markdown(
@@ -179,7 +180,7 @@ def show():
                     **🔗 Quote:** {row['quote_count']}  
 
                     ---
-                    **HS Label:** {row['HS_label'].capitalize()}  
+                    **HS Label:** {hs_label_text}  
                     **Predicted Sentiment:** {row['Predicted Label']}  
                     **Sarcasm Detected:** {row['sarcasm']}
                     """
