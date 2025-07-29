@@ -52,7 +52,7 @@ ner['entity_role'] = ner['entity'] + ' - ' + ner['role']
 ner_grouped = ner.groupby('ID')['entity_role'].agg(', '.join).reset_index()
 df = df.merge(ner_grouped, on='ID', how='left')
 
-df.to_csv('final.csv')
+# df.to_csv('final.csv')
 # st.dataframe(df)
 
 if "df" not in st.session_state:

@@ -63,7 +63,7 @@ def show():
 
     cols_needed = [
         "username", "full_text", "virality_score",
-        "quote_count", "reply_count", "retweet_count", "favorite_count"
+        "quote_count", "reply_count", "retweet_count", "favorite_count", "HS_label", "Predicted Label", "sarcasm"  
     ]
 
     top_viral_by_univ = (
@@ -75,20 +75,26 @@ def show():
     st.subheader("Most Viral Tweets by University")
 
     for i, row in top_viral_by_univ.iterrows():
+        hs_label_text = "Hate" if row["HS_label"] == 1.0 else "Non Hate"
         with st.expander(f"{i+1}. {row['username']} — Virality Score: {row['virality_score']:.2f}"):
             st.write(row["full_text"])
             st.markdown(
-                f"""
-                **💬 Reply:** {row['reply_count']} &nbsp;&nbsp;
-                **🔁 Retweet:** {row['retweet_count']} &nbsp;&nbsp;
-                **❤️ Like:** {row['favorite_count']} &nbsp;&nbsp;
-                **🔗 Quote:** {row['quote_count']}
-                """
-            )
+            f"""
+            **💬 Reply:** {row['reply_count']} &nbsp;&nbsp;
+            **🔁 Retweet:** {row['retweet_count']} &nbsp;&nbsp;
+            **❤️ Like:** {row['favorite_count']} &nbsp;&nbsp;
+            **🔗 Quote:** {row['quote_count']}  
+
+            ---
+            **HS Label:** {hs_label_text}  
+            **Predicted Sentiment:** {row['Predicted Label']}  
+            **Sarcasm Detected:** {row['sarcasm']}
+            """
+        )
 
     top_20_viral = df.sort_values(by='virality_score', ascending=False).head(20)
 
-    top_20_viral_display = top_20_viral[['username', 'full_text', 'virality_score', 'quote_count', 'reply_count', 'retweet_count', 'favorite_count']]
+    top_20_viral_display = top_20_viral[['username', 'full_text', 'virality_score', 'quote_count', 'reply_count', 'retweet_count', 'favorite_count', "HS_label", "Predicted Label", "sarcasm"]]
     pd.set_option('display.max_colwidth', None)
 
     st.subheader("Top 20 Most Viral Tweet")
@@ -100,10 +106,80 @@ def show():
         df[df['username'] == selected_user]
         .sort_values(by='virality_score', ascending=False)
         .head(10)
-        [['full_text', 'virality_score', 'quote_count', 'reply_count', 'retweet_count', 'favorite_count']]
+        [['full_text', 'virality_score', 'quote_count', 'reply_count', 'retweet_count', 'favorite_count', "HS_label", "Predicted Label", "sarcasm"]]
         .reset_index(drop=True)
     )
 
     st.subheader(f" @{selected_user}")
     st.dataframe(top10, use_container_width=True)
 
+    cols_needed = [
+    "username", "full_text", "virality_score",
+    "quote_count", "reply_count", "retweet_count", "favorite_count",
+    "HS_label", "Predicted Label", "sarcasm"
+    ]
+
+    top_10_hate = (
+        df.loc[df["HS_label"].str.lower() == "hate", cols_needed]
+        .sort_values(by="virality_score", ascending=False)
+        .head(10)
+        .reset_index(drop=True)
+    )
+
+    st.subheader("Top 10 Most Viral Hate Tweets")
+
+    if top_10_hate.empty:
+        st.write("Tidak ada tweet dengan label Hate yang memenuhi kriteria.")
+    else:
+        for i, row in top_10_hate.iterrows():
+            with st.expander(f"{i+1}. {row['username']} — Virality Score: {row['virality_score']:.2f}"):
+                st.write(row["full_text"])
+                st.markdown(
+                    f"""
+                    **💬 Reply:** {row['reply_count']} &nbsp;&nbsp;
+                    **🔁 Retweet:** {row['retweet_count']} &nbsp;&nbsp;
+                    **❤️ Like:** {row['favorite_count']} &nbsp;&nbsp;
+                    **🔗 Quote:** {row['quote_count']}  
+
+                    ---
+                    **HS Label:** {row['HS_label'].capitalize()}  
+                    **Predicted Sentiment:** {row['Predicted Label']}  
+                    **Sarcasm Detected:** {row['sarcasm']}
+                    """
+                )
+
+
+    cols_needed = [
+    "username", "full_text", "virality_score",
+    "quote_count", "reply_count", "retweet_count", "favorite_count",
+    "HS_label", "Predicted Label", "sarcasm"
+    ]
+
+    top_10_sarcasm= (
+        df.loc[df["sarcasm"].str.lower() == "sarcastic", cols_needed]
+        .sort_values(by="virality_score", ascending=False)
+        .head(10)
+        .reset_index(drop=True)
+    )
+
+    st.subheader("Top 10 Most Viral Sarcasm Tweets")
+
+    if top_10_sarcasm.empty:
+        st.write("Tidak ada tweet dengan label Sarcasm yang memenuhi kriteria.")
+    else:
+        for i, row in top_10_sarcasm.iterrows():
+            with st.expander(f"{i+1}. {row['username']} — Virality Score: {row['virality_score']:.2f}"):
+                st.write(row["full_text"])
+                st.markdown(
+                    f"""
+                    **💬 Reply:** {row['reply_count']} &nbsp;&nbsp;
+                    **🔁 Retweet:** {row['retweet_count']} &nbsp;&nbsp;
+                    **❤️ Like:** {row['favorite_count']} &nbsp;&nbsp;
+                    **🔗 Quote:** {row['quote_count']}  
+
+                    ---
+                    **HS Label:** {row['HS_label'].capitalize()}  
+                    **Predicted Sentiment:** {row['Predicted Label']}  
+                    **Sarcasm Detected:** {row['sarcasm']}
+                    """
+                )
