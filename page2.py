@@ -120,7 +120,7 @@ def show():
     ]
 
     top_10_hate = (
-        df.loc[df["HS_label"].str.lower() == "hate", cols_needed]
+        df.loc[df["HS_label"].str.lower() == '1.0', cols_needed]
         .sort_values(by="virality_score", ascending=False)
         .head(10)
         .reset_index(drop=True)
