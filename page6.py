@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import plotly.express as px
 from wordcloud import WordCloud
 from collections import Counter
+import altair as alt
 
 def show():
     df = st.session_state['df']
@@ -209,3 +210,38 @@ def show():
     
     st.subheader("Total Entity Target Hate Speech per Username")
     st.dataframe(entity_user_counts.sort_values(by='Count', ascending=False))
+
+    hate_df = filtered_df[filtered_df['HS_label'] == 'hate']
+
+
+    grouped = hate_df.groupby(['day']).size().reset_index(name='Total Tweet')
+
+    chart = alt.Chart(grouped).mark_bar().encode(
+    x=alt.X('day:N', title='Day'),
+    y=alt.Y('Total Tweet:Q', title='Total Tweet'),
+    tooltip=['day:N', 'Total Tweet:Q']
+    ).properties(
+        width=400,
+        height=300,
+        title="Hate Tweet Distribution per Day"
+    ).configure_axisX(
+        labelAngle=-45
+    )
+
+    st.altair_chart(chart, use_container_width=True)
+
+    grouped = hate_df.groupby(['hour']).size().reset_index(name='Total Tweet')
+
+
+    
+    chart = alt.Chart(grouped).mark_bar().encode(
+        x=alt.X('hour:O', title='Hour (0–23)'),
+        y=alt.Y('Total Tweet:Q', title='Total Tweet'),
+        tooltip=['hour:O', 'Total Tweet:Q']
+    ).properties(
+        width=400,
+        height=300,
+        title="Hate Tweet Distribution per Hour"
+    )
+
+    st.altair_chart(chart, use_container_width=True)
