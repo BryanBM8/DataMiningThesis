@@ -215,7 +215,7 @@ def show():
     st.subheader("Total Entity Target Sarcasm per Username")
     st.dataframe(entity_user_counts.sort_values(by='Count', ascending=False))
 
-    sarcastic_df = filtered_df[filtered_df['sarcasm'] == 'sarcastic']
+    sarcastic_df =df[df['sarcasm'] == 'sarcastic']
 
     grouped = sarcastic_df.groupby(['day']).size().reset_index(name='Total Tweet')
 
