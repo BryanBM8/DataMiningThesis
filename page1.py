@@ -24,7 +24,7 @@ def show():
             alt.Chart(user_df)
             .mark_bar(color='skyblue')
             .encode(
-                x=alt.X('hour:O', bin=alt.Bin(maxbins=24), title='Jam (0-23)'),
+                x=alt.X('hour:O', bin=alt.Bin(maxbins=24), title='Hour (0-23)'),
                 y=alt.Y('count()', title='Total Tweet'),
                 tooltip=['hour', 'count()']
             )
@@ -78,6 +78,45 @@ def show():
         st.altair_chart(bar_chart, use_container_width=True)
 
 
+
+
+    # st.title('Distribution of Tweets per Day')
+    # day_order = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
+    # selected_users = st.multiselect(
+    #     "Choose Username:", usernames, default=list(usernames), 
+    #     key="user_selector"
+    # )
+
+    # selected_days = st.multiselect(
+    #     "Choose Day:", day_order, default=day_order, 
+    #     key="day_selector"
+    # )
+
+    # df_filtered = df[
+    #     (df["username"].isin(selected_users)) &
+    #     (df["day"].isin(selected_days))
+    # ]
+
+    # if df_filtered.empty:
+    #     st.warning("No data matches the selected filter.")
+    # else:
+    #     line_chart = (
+    #         alt.Chart(df_filtered)
+    #         .mark_line(point=True)
+    #         .encode(
+    #             x=alt.X('day:N', sort=day_order, title='Day'),
+    #             y=alt.Y('count():Q', title='Total Tweet'),
+    #             color='username:N',
+    #             tooltip=['day', 'username', 'count()']
+    #         )
+    #         .properties(
+    #             width=600,
+    #             height=400,
+    #         )
+    #     )
+    #     st.altair_chart(line_chart, use_container_width=True)
+
     st.title("Heatmap Tweet Activity")
 
     heatmap_data = (
@@ -93,8 +132,8 @@ def show():
         alt.Chart(heatmap_data)
         .mark_rect()
         .encode(
-            x=alt.X('hour:O', title='Jam (0–23)'),
-            y=alt.Y('day:N', sort=day_order, title='Hari'),
+            x=alt.X('hour:O', title='Hour (0–23)'),
+            y=alt.Y('day:N', sort=day_order, title='Day'),
             color=alt.Color('count:Q', scale=alt.Scale(scheme='blues')),
             tooltip=['day', 'hour', 'count']
         )
@@ -112,7 +151,7 @@ def show():
 
     grouped = df.groupby(['day', 'Predicted Label']).size().reset_index(name='Total Tweet')
     chart = alt.Chart(grouped).mark_bar().encode(
-        x=alt.X('day:N', title='Hari'),
+        x=alt.X('day:N', title='Day'),
         y=alt.Y('Total Tweet:Q', title='Total Tweet'),
         color=alt.Color('Predicted Label:N', title='Sentimen'),
         tooltip=['day', 'Predicted Label', 'Total Tweet'],
@@ -126,14 +165,14 @@ def show():
     )
 
     chart = alt.Chart(grouped).mark_bar().encode(
-        x=alt.X('day:N', title='Hari', sort=day_order),
+        x=alt.X('day:N', title='Day', sort=day_order),
         y=alt.Y('Total Tweet:Q', title='Total Tweet'),
         color=alt.Color('Predicted Label:N', title='Sentimen'),
         tooltip=['day', 'Predicted Label', 'Total Tweet']
     )
 
     chart = chart.encode(
-        x=alt.X('day:N', title='Hari', sort=day_order),
+        x=alt.X('day:N', title='Day', sort=day_order),
         y='Total Tweet:Q',
         color='Predicted Label:N'
     ).properties(
@@ -173,11 +212,11 @@ def show():
     role_counts = df.groupby(['username', 'entity_role']).size().reset_index(name='Count')
 
     usernames = role_counts['username'].unique()
-    selected_user = st.selectbox("Pilih Username", usernames)
+    selected_user = st.selectbox("Choose Username", usernames)
 
     filtered = role_counts[role_counts['username'] == selected_user].sort_values(by='Count', ascending=False)
 
-    st.title("Entity Role Terbanyak per Username")
+    st.title("Most Entity Role per Username")
     st.subheader(f"Username: {selected_user}")
 
     st.dataframe(filtered)

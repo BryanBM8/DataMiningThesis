@@ -104,7 +104,7 @@ def show():
 
     sentiment_sarcasm['Sarcasm'] = sentiment_sarcasm['sarcasm'].map({'sarcastic': 'Sarcastic', 'not_sarcastic': 'Not Sarcastic'})
 
-    st.subheader("Distribusi Umum Sentimen & Sarkasme")
+    st.subheader("General Distribution of Sentiment & Sarcasm")
     st.dataframe(sentiment_sarcasm[['Sarcasm', 'Predicted Label', 'count']])
 
     fig = px.bar(
@@ -114,13 +114,13 @@ def show():
         color='Sarcasm',
         barmode='group',
         text='count',
-        title="Distribusi Sarkas vs Sentimen (Gabungan Seluruh Tweet)"
+        title="Distribution Sarcasm vs Sentiment"
     )
     st.plotly_chart(fig)
 
 
 
-    st.subheader("Distribusi Sentimen pada Tweet Sarkastik per Universitas")
+    st.subheader("Distribution Sentiment on Sarcastic Tweets per University")
 
     sarkas_df = df[df['sarcasm'] == 'sarcastic']
 
@@ -131,8 +131,8 @@ def show():
 )
 
     sentiment_sarcasm_by_user['Sarcasm'] = sentiment_sarcasm_by_user['sarcasm'].map({
-        'sarcastic': 'Sarkas',
-        'not_sarcastic': 'Non-Sarkas'
+        'sarcastic': 'Sarcastic',
+        'not_sarcastic': 'Non-Sarcastic'
     })
 
     usernames = sentiment_sarcasm_by_user['username'].unique()
@@ -149,7 +149,7 @@ def show():
             color='Sarcasm',
             barmode='group',
             text='Count',
-            title=f"Sentimen Tweet Sarkas vs Non-Sarkas - {univ}"
+            title=f"Sentiment Tweet Sarcastic vs Non-Sarcastic - {univ}"
         )
 
         with cols[col_index]:
@@ -171,7 +171,7 @@ def show():
 
     wordcloud = WordCloud(width=1000, height=500, background_color='white').generate(combined_text)
 
-    st.subheader("WordCloud untuk Sarcasm Tweets")
+    st.subheader("WordCloud for Sarcasm Tweets")
     fig, ax = plt.subplots(figsize=(12, 6))
     ax.imshow(wordcloud, interpolation='bilinear')
     ax.axis('off')
@@ -190,7 +190,7 @@ def show():
                 univ_texts = df_sarcasm[df_sarcasm['username'] == univ]['clean_text'].dropna()
                 combined_text = " ".join(univ_texts.astype(str))
 
-                if combined_text.strip():  # cek tidak kosong
+                if combined_text.strip():  
                     wordcloud = WordCloud(width=800, height=400, background_color='white').generate(combined_text)
 
                     fig, ax = plt.subplots(figsize=(6, 3))
@@ -200,7 +200,7 @@ def show():
 
                     st.pyplot(fig)
                 else:
-                    st.write(f"Tidak ada tweet HS untuk {univ}")
+                    st.write(f"No sarcastic tweets for{univ}")
 
 
     df_hs = df[(df['sarcasm'] == 'sarcastic') & df['entity_role'].notna()].copy()

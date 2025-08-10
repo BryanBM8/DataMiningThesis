@@ -12,7 +12,6 @@ import altair as alt
 def show():
     df = st.session_state['df']
     st.header('Percentage Distribution of Hate')
-    df['HS_label'] = df['HS_label'].replace({1: 'hate', 0: 'non_hate'})
     hate_counts = df['HS_label'].value_counts()
     hate_percentages = (hate_counts / hate_counts.sum()) * 100
 
@@ -56,7 +55,7 @@ def show():
             names='HS_label',
             values='count', 
             color='HS_label',
-            title=f"hate {user}"
+            title=f"Hate {user}"
         )
         fig.update_traces(
             textinfo='percent+label',
@@ -186,7 +185,7 @@ def show():
                 univ_texts = df_hs[df_hs['username'] == univ]['clean_text'].dropna()
                 combined_text = " ".join(univ_texts.astype(str))
 
-                if combined_text.strip():  # cek tidak kosong
+                if combined_text.strip(): 
                     wordcloud = WordCloud(width=800, height=400, background_color='white').generate(combined_text)
 
                     fig, ax = plt.subplots(figsize=(6, 3))

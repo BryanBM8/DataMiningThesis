@@ -4,7 +4,7 @@ import streamlit as st
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-
+import plotly.express as px
 def show():
 
 
@@ -29,10 +29,7 @@ def show():
 
         For each tweet:
 
-        Virality Score = (13.5 × Reply Count)
-        + (1.5 × Quote Count)
-        + (1.0 × Retweet Count)
-        + (0.5 × Like Count)
+        Virality Score = (13.5 × Reply Count) + (1.5 × Quote Count) + (1.0 × Retweet Count) + (0.5 × Like Count)
 
         A higher score indicates a more "viral" tweet.  
         Optionally, the score can be **normalized by follower count** to make comparisons fair between small and large accounts.
@@ -43,23 +40,144 @@ def show():
     df = st.session_state['df']
     usernames = df['username'].unique()
     st.header('Average Virality Score per University')
-    viral_avg = df.groupby('username')['virality_score'].mean().sort_values(ascending=False)
-    viral_total = df.groupby('username')['virality_score'].sum().sort_values(ascending=False)
 
-    fig, ax = plt.subplots(figsize=(12, 6))
-    sns.barplot(
-        x=viral_avg.index,
-        y=viral_avg.values,
-        palette="coolwarm",
-        ax=ax
+    viral_avg = (
+        df.groupby('username')['virality_score']
+        .mean()
+        .reset_index()
+        .sort_values('virality_score', ascending=False)
     )
-    ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
-    ax.set_ylabel("Average Virality")
-    ax.set_xlabel("University")
-    fig.tight_layout()
-    st.pyplot(fig) 
+
+    fig = px.bar(
+        viral_avg,
+        x='username',
+        y='virality_score',
+        title="Average Virality per University",
+        color='virality_score',
+        color_continuous_scale='RdBu',
+        hover_data={'username': True, 'virality_score': ':.2f'}
+    )
+
+    fig.update_layout(
+        xaxis_title="University",
+        yaxis_title="Average Virality",
+        xaxis_tickangle=45
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
 
 
+    st.subheader("Average Virality Score per University (Sarcasm vs Non-Sarcasm)")
+    df['Sarcasm'] = df['sarcasm'].map({
+        'sarcastic': 'Sarcasm',
+        'not_sarcastic': 'Non-Sarcasm'
+    })
+
+    virality_sarcasm = (
+        df.groupby(['username', 'Sarcasm'])['virality_score']
+        .mean()
+        .reset_index()
+    )
+
+    usernames = virality_sarcasm['username'].unique()
+    cols = st.columns(3)
+    col_index = 0
+
+    for univ in usernames:
+        univ_data = virality_sarcasm[virality_sarcasm['username'] == univ]
+
+        fig = px.bar(
+            univ_data,
+            x='Sarcasm',
+            y='virality_score',
+            color='Sarcasm',
+            barmode='group',
+            text='virality_score',
+            title=f"Sarcasm vs Non-Sarcasm - {univ}"
+        )
+
+        fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
+        fig.update_layout(yaxis_title="Average Virality Score", xaxis_title="Category")
+
+        with cols[col_index]:
+            st.plotly_chart(fig, use_container_width=True)
+
+        col_index = (col_index + 1) % 3
+        if col_index == 0:
+            cols = st.columns(3)
+
+
+
+    st.subheader("Average Virality Score per University (Hate vs Non-Hate)")
+
+    virality_hate = (
+        df.groupby(['username', 'HS_label'])['virality_score']
+        .mean()
+        .reset_index()
+    )
+
+    usernames = virality_hate['username'].unique()
+    cols = st.columns(3)
+    col_index = 0
+
+    for univ in usernames:
+        univ_data = virality_hate[virality_hate['username'] == univ]
+
+        fig = px.bar(
+            univ_data,
+            x='HS_label',
+            y='virality_score',
+            color='HS_label',
+            barmode='group',
+            text='virality_score',
+            title=f"Hate vs Non-Hate - {univ}"
+        )
+
+        fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
+        fig.update_layout(yaxis_title="Average Virality Score", xaxis_title="Category")
+
+        with cols[col_index]:
+            st.plotly_chart(fig, use_container_width=True)
+
+        col_index = (col_index + 1) % 3
+        if col_index == 0:
+            cols = st.columns(3)
+
+
+    st.subheader("Average Virality Score per University (Sentiment)")
+
+    virality_sentiment = (
+        df.groupby(['username', 'Predicted Label'])['virality_score']
+        .mean()
+        .reset_index()
+    )
+
+    usernames = virality_sentiment['username'].unique()
+    cols = st.columns(3)
+    col_index = 0
+
+    for univ in usernames:
+        univ_data = virality_sentiment[virality_sentiment['username'] == univ]
+
+        fig = px.bar(
+            univ_data,
+            x='Predicted Label',
+            y='virality_score',
+            color='Predicted Label',
+            barmode='group',
+            text='virality_score',
+            title=f"Sentiment - {univ}"
+        )
+
+        fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
+        fig.update_layout(yaxis_title="Average Virality Score", xaxis_title="Category")
+
+        with cols[col_index]:
+            st.plotly_chart(fig, use_container_width=True)
+
+        col_index = (col_index + 1) % 3
+        if col_index == 0:
+            cols = st.columns(3)
 
     cols_needed = [
         "username", "full_text", "virality_score",
@@ -75,7 +193,6 @@ def show():
     st.subheader("Most Viral Tweets by University")
 
     for i, row in top_viral_by_univ.iterrows():
-        hs_label_text = "Hate" if row["HS_label"] == 1.0 else "Non Hate"
         with st.expander(f"{i+1}. {row['username']} — Virality Score: {row['virality_score']:.2f}"):
             st.write(row["full_text"])
             st.markdown(
@@ -86,7 +203,7 @@ def show():
             **🔗 Quote:** {row['quote_count']}  
 
             ---
-            **HS Label:** {hs_label_text}  
+            **HS Label:** {row['HS_label']}  
             **Predicted Sentiment:** {row['Predicted Label']}  
             **Sarcasm Detected:** {row['sarcasm']}
             """
@@ -120,7 +237,7 @@ def show():
     ]
 
     top_10_hate = (
-        df.loc[df["HS_label"].astype(str) == '1.0', cols_needed]
+        df.loc[df["HS_label"]=='hate', cols_needed]
         .sort_values(by="virality_score", ascending=False)
         .head(10)
         .reset_index(drop=True)
@@ -129,10 +246,9 @@ def show():
     st.subheader("Top 10 Most Viral Hate Tweets")
 
     if top_10_hate.empty:
-        st.write("Tidak ada tweet dengan label Hate yang memenuhi kriteria.")
+        st.write("There are no tweets with the label hate that meet the criteria.")
     else:
         for i, row in top_10_hate.iterrows():
-            hs_label_text = "Hate" if str(row["HS_label"]) == "1.0" else "Non-Hate"
             with st.expander(f"{i+1}. {row['username']} — Virality Score: {row['virality_score']:.2f}"):
                 st.write(row["full_text"])
                 st.markdown(
@@ -143,7 +259,7 @@ def show():
                     **🔗 Quote:** {row['quote_count']}  
 
                     ---
-                    **HS Label:** {hs_label_text}  
+                    **HS Label:** {row['HS_label']}  
                     **Predicted Sentiment:** {row['Predicted Label']}  
                     **Sarcasm Detected:** {row['sarcasm']}
                     """
@@ -166,10 +282,9 @@ def show():
     st.subheader("Top 10 Most Viral Sarcasm Tweets")
 
     if top_10_sarcasm.empty:
-        st.write("Tidak ada tweet dengan label Sarcasm yang memenuhi kriteria.")
+        st.write("There are no tweets with the label Sarcasm that meet the criteria.")
     else:
         for i, row in top_10_sarcasm.iterrows():
-            hs_label_text = "Hate" if str(row["HS_label"]) == "1.0" else "Non-Hate"
             with st.expander(f"{i+1}. {row['username']} — Virality Score: {row['virality_score']:.2f}"):
                 st.write(row["full_text"])
                 st.markdown(
@@ -180,7 +295,7 @@ def show():
                     **🔗 Quote:** {row['quote_count']}  
 
                     ---
-                    **HS Label:** {hs_label_text}  
+                    **HS Label:** {row['HS_label']}  
                     **Predicted Sentiment:** {row['Predicted Label']}  
                     **Sarcasm Detected:** {row['sarcasm']}
                     """

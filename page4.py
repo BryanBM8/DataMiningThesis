@@ -35,6 +35,32 @@ def show():
 
     st.plotly_chart(fig)
 
+
+
+
+    # fig = px.bar(
+    #     sentiment_df,
+    #     x='Sentiment',      
+    #     y='Count',          
+    #     color='Sentiment',  
+    #     text='Count',      
+    #     title="General Sentiment Distribution (Based on Number)",
+    # )
+
+    # fig.update_traces(
+    #     textposition='outside',
+    #     hovertemplate='%{x}<br>Total: %{y}<extra></extra>'
+    # )
+
+    # fig.update_layout(
+    #     yaxis=dict(title='Jumlah Pesan'),
+    #     xaxis=dict(title='Sentiment'),
+    #     uniformtext_minsize=8,
+    #     uniformtext_mode='hide'
+    # )
+
+    # st.plotly_chart(fig)
+
     sentiment_by_univ = df.groupby(['username', 'Predicted Label']).size().reset_index(name='count')
     total_by_univ = df.groupby('username').size().reset_index(name='total')
     sentiment_by_univ = sentiment_by_univ.merge(total_by_univ, on='username')
@@ -53,7 +79,7 @@ def show():
             names='Predicted Label',
             values='count', 
             color='Predicted Label',
-            title=f"Sentimen {user}"
+            title=f"Sentiment {user}"
         )
         fig.update_traces(
             textinfo='percent+label',
@@ -68,6 +94,41 @@ def show():
         if col_index == 3:
             cols = st.columns(3)
             col_index = 0
+
+
+
+    # cols = st.columns(3)
+    # col_index = 0
+    # usernames = df['username'].dropna().unique()
+
+    # for i, user in enumerate(usernames):
+    #     user_data = sentiment_by_univ[sentiment_by_univ['username'] == user]
+
+    #     fig = px.bar(
+    #         user_data,
+    #         x='Predicted Label',       
+    #         y='count',               
+    #         color='Predicted Label',   
+    #         text='count',             
+    #         title=f"Sentimen {user}",
+    #     )
+
+    #     fig.update_traces(
+    #         textposition='outside',
+    #         hovertemplate='%{x}<br>Total: %{y}<extra></extra>'
+    #     )
+
+    #     fig.update_layout(
+    #         yaxis=dict(title='Jumlah Pesan'),
+    #         xaxis=dict(title='Sentiment'),
+    #         uniformtext_minsize=8,
+    #         uniformtext_mode='hide'
+    #     )
+
+    #     with cols[col_index]:
+    #         st.plotly_chart(fig, use_container_width=True)
+
+    #     col_index = (col_index + 1) % 3
 
 
     df = df.dropna(subset=['full_text', 'Predicted Label', 'username'])
@@ -95,7 +156,7 @@ def show():
     grouped = filtered_df.groupby(['day', 'Predicted Label']).size().reset_index(name='Total Tweet')
 
     chart = alt.Chart(grouped).mark_bar().encode(
-        x=alt.X('day:N', title='Hari'),
+        x=alt.X('day:N', title='Day'),
         y=alt.Y('Total Tweet:Q', title='Total Tweet'),
         color=alt.Color('Predicted Label:N', title='Sentimen'),
         column=alt.Column('Predicted Label:N', title='Sentimen'),
@@ -115,7 +176,7 @@ def show():
 
 
     chart = alt.Chart(grouped).mark_bar().encode(
-        x=alt.X('hour:O', title='Jam (0–23)'),
+        x=alt.X('hour:O', title='Hour (0–23)'),
         y=alt.Y('Total Tweet:Q', title='Total Tweet'),
         color=alt.Color('Predicted Label:N', title='Sentiment'),
         column=alt.Column('Predicted Label:N', title='Sentiment'),

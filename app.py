@@ -22,6 +22,7 @@ hate=pd.read_csv('hate.csv')
 hs_cols = hate.loc[:, 'HS':'Abusive_label'].copy()
 hs_cols['ID'] = hate['ID'] 
 df= df.merge(hs_cols, on='ID', how='left')
+df['HS_label'] = df['HS_label'].map({0: 'non_hate', 1: 'hate'})
 
 # Topik
 topik=pd.read_csv('Topik/hasil_topik_per_tweet.csv')
@@ -59,6 +60,15 @@ if "df" not in st.session_state:
     st.session_state['df'] = df
 
 usernames = df['username'].unique()
+st.write("""
+    General Information of University:
+    -  ui_fess= University of Indonesia
+    -  UGM_fess= University Gajah Mada
+    -  sunib_fess= Bina Nusantara University
+    -  ug_fess= Gunadarma University
+    -  telyufess= Telkom University
+    -  draftanakunpad3= University Padajajaran
+""")
 
 st.subheader("Distribution of Tweets per University")
 
@@ -97,6 +107,9 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
+
+
+
 tabs1, tabs2, tabs3, tabs4, tabs5, tabs6= st.tabs( ["General Information", "Virality", "Topic Modeling", "Sentiment Analysis", "Sarcasm", "Hate"])
 
 with tabs1:
